@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script type='text/javascript' src='https://cdn.scaledrone.com/scaledrone.min.js'></script>
+<script type='text/javascript' src="script.js"></script>
+<script type='text/javascript' src="https://www.webrtc-experiment.com/RecordRTC.js"></script>
+<script type='text/javascript' src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+<script type='text/javascript' src="https://www.webrtc-experiment.com/common.js"></script>
+<script type='text/javascript' src="screenrecord.js"></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+body {
+  font-family: Arial;
+  color: white;
+  display: flex;
+  height: 100vh;
+  margin: 0;
+  align-items: center;
+  justify-content: center;
+  padding: 0 50px;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  
+}
+
+.split {
+  height: 100%;
+  width: 50%;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  overflow-x: hidden;
+  padding-top: 20px;
+}
+
+.left {
+  left: 0;
+  background-color: rgb(87, 183, 228);
+}
+
+.right {
+  right: 0;
+  background-color: white;
+}
+
+.centered {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.centered img {
+  width: 150px;
+  border-radius: 50%;
+}
+
+video {
+      max-width: calc(50% - 100px);
+      margin: 0 50px;
+      box-sizing: border-box;
+      border-radius: 2px;
+      padding: 0;
+      box-shadow: rgba(156, 172, 172, 0.2) 0px 2px 2px, rgba(156, 172, 172, 0.2) 0px 4px 4px, rgba(156, 172, 172, 0.2) 0px 8px 8px, rgba(156, 172, 172, 0.2) 0px 16px 16px, rgba(156, 172, 172, 0.2) 0px 32px 32px, rgba(156, 172, 172, 0.2) 0px 64px 64px;
+    }
+.copy {
+      position: fixed;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 16px;
+      color: rgba(0, 0, 0, 0.5);
+}
+
+</style>
+</head>
+<body>
+
+<div class="split left">
+  <div class="centered">
+<!-- 
+    <h2>Question List</h2>
+     <h2>Do you smoke</h2><input type="checkbox" name="vehicle" value="Smoke"> yes<br><input type="checkbox" name="vehicle" value="Smoke"> yes<br>
+    	  
+		 -->
+		<p><button id="btnstart">START RECORDING </button><br/><br>
+		<button id="btnstop">STOP RECORDING</button></p>
+		
+		
+      </div>
+</div>
+
+<div class="split right">
+  <div class="centered">
+  
+    <h2>http://10.1.24.55:8080/video/index.html#e4564c</h2>
+	  <div class="copy">Send your URL to a friend to start a video call</div>
+  <video id="localVideo" autoplay muted></video>
+  <video id="remoteVideo" autoplay></video>
+    <p>Some text here too.</p>
+  </div>
+</div>
+ <header>
+	 
+		
+		<video controls></video>
+		
+		<video id="vid2" controls></video>
+		
+	</main>
+	<script>
+	   let constraintOBJ= { audio: true,
+	   video: { facingMode: "user",
+	            width: {min:640, ideal:1280, max:1920},
+				height:{min:480, ideal:720, max:1080}
+			  }
+			  };
+			  if(navigator.mediaDevices === undefined)
+			  {
+			  navigator.mediaDevices={};
+			  navigator.mediaDevices.getUserMedia=function(constraints){
+			  let getUserMedia= navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+			  if(!getUserMedia)
+			  {return Promise.reject(new Error('getUserMedia is not implemented in this browser'));
+			  }
+			  return new Promise(function(resolve,reject)
+			  {
+			  getUserMedia.call(navigator,constraints,resolve,reject);
+			  });
+			  }
+			  }else{navigator.mediaDevices.enumerateDevices().then(device => {device.forEach(device=>{device.kind.toUpperCase(),device.label}).catch(err=>{console.log(err.message);
+			  })
+			  }
+			  ,navigator.mediaDevices.getUserMedia(constraintOBJ).then(function(mediaStreamObj)
+			  {
+			  let video=document.querySelector('video');
+			  if ("srcObject" in video)
+			  {
+			  video,srcObject=mediaStreamObj;
+			  }
+			  else
+			  {
+			  video.src=window.URL.createObjectURL(mediaStreamObj);
+			  }
+			  video.onloadedmetadata= function(ev)
+			  {
+			  video.play();
+			  };
+			  
+			  let start= document.getElementById('btnStart');
+			  let stop= document.getElementById('btnstop');
+			  let vidSave=document.getElementById('vid2');
+			  let mediaRecorder=new MediaRecorder(mediaStreamObj);
+			  let chunks={};
+			  
+			  start.addEventListener('click', (ev)=> mediaRecorder.start()
+			  ,console.log(mediaRecorder.state));
+			  }));
+			  stop.addEventListener('click',(ev)=>{mediaRecorder.stop()
+			  console.log(mediaRecorder.state);
+			  });
+			  mediaRecorder.ondataavailable=function(ev){
+			  chunks.push(ev.data);}
+			  mediaRecorder.onstop=(ev)=>{
+			  let blob=new blob(chunks, {'type': 'video/mp4;'});
+			  chunks=[];
+			  let videoURL=window.URL.createObjectURL(blob);
+			  vidSave.src=videoURL;
+			  }
+			  }
+			  (function(err){console.log(err.name,err.message);
+			  });
+			  </script>
+</body>
+</html> 
